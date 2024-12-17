@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>spinrax</title>
 
+    <!-- Open Graph Embed -->
     <meta property="og:title" content="spinrax">
     <meta property="og:description" content="hehe mynrax go spin">
+
+    <!-- Favicon (Animated) -->
+    <link rel="icon" type="image/png" href="favicon.png">
 
     <style>
         body {
@@ -37,26 +41,42 @@
 </head>
 <body>
 
+    <!-- Spinning Image -->
     <img src="output.gif" alt="spinrax">
+
+    <!-- Message for First Interaction -->
     <div id="message">click anywhere for music 🎵</div>
 
+    <!-- Looping Audio -->
     <audio id="background-audio" loop>
         <source src="funkytown.ogg" type="audio/ogg">
         Your browser does not support the audio tag.
     </audio>
 
     <script>
-        document.body.addEventListener('click', () => {
-            const audio = document.getElementById('background-audio');
-            audio.play().catch(error => {
-                console.error("Audio playback failed:", error);
-            });
+        const audio = document.getElementById('background-audio');
+        const message = document.getElementById('message');
 
-            const message = document.getElementById('message');
-            if (message) {
+        // Function to attempt playing audio
+        function playAudio() {
+            audio.volume = 0.2; // Set volume to 20%
+            audio.play().then(() => {
+                // Hide the message and save preference
                 message.style.display = 'none';
-            }
-        }, { once: true }); // makes it only do it once cause i forgor
+                localStorage.setItem('autoplayAllowed', 'true');
+            }).catch(err => {
+                console.warn("Audio playback failed:", err);
+                message.innerText = "Click to enable music 🎵"; // Keep the message visible
+            });
+        }
+
+        // Autoplay if previously allowed
+        if (localStorage.getItem('autoplayAllowed') === 'true') {
+            playAudio();
+        }
+
+        // Always allow manual click to play
+        document.body.addEventListener('click', playAudio);
     </script>
 </body>
 </html>
