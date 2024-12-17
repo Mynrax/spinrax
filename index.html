@@ -9,6 +9,7 @@
     <meta property="og:title" content="spinrax">
     <meta property="og:description" content="hehe mynrax go spin">
 
+
     <!-- Favicon (Animated) -->
     <link rel="icon" type="image/png" href="favicon.png">
 
@@ -24,6 +25,7 @@
             cursor: pointer; 
             color: white;
             font-family: Arial, sans-serif;
+            position: relative;
         }
 
         img {
@@ -37,6 +39,29 @@
             font-size: 1.2em;
             text-align: center;
         }
+
+        #ios-message {
+            position: absolute;
+            bottom: 60px;
+            font-size: 1em;
+            color: yellow;
+            background-color: black;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            display: none;
+        }
+
+        #ios-message button {
+            margin-left: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -47,17 +72,25 @@
     <!-- Message for First Interaction -->
     <div id="message">click anywhere for music 🎵</div>
 
+    <!-- iOS User Message (Dismissable) -->
+    <div id="ios-message">
+        sorry iOS user, apple blows and won't let ogg files work on iOS, so you're stuck with an inferior version of this site. 
+        <button id="dismiss-ios-message">oh ok</button>
+    </div>
+
     <!-- Looping Audio -->
     <audio id="background-audio" loop>
-        <source src="funkytown.ogg" type="audio/ogg">
+        <source id="audio-source" src="funkytown.ogg" type="audio/ogg">
         Your browser does not support the audio tag.
     </audio>
 
     <script>
         const audio = document.getElementById('background-audio');
         const message = document.getElementById('message');
-
-        // Function to attempt playing audio
+        const iosMessage = document.getElementById('ios-message');
+        const dismissButton = document.getElementById('dismiss-ios-message');
+        
+        // Function to play audio
         function playAudio() {
             audio.volume = 0.2; // Set volume to 20%
             audio.play().then(() => {
@@ -69,6 +102,24 @@
                 message.innerText = "Click to enable music 🎵"; // Keep the message visible
             });
         }
+
+        // Check if the user is on iOS
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        }
+
+        // If iOS, change the audio source to MP3 and show iOS message
+        if (isIOS()) {
+            const audioSource = document.getElementById('audio-source');
+            audioSource.src = "funkytown.mp3"; // Use MP3 for iOS
+            audioSource.type = "audio/mp3";
+            iosMessage.style.display = 'block'; // Show the iOS message
+        }
+
+        // Dismiss iOS message
+        dismissButton.addEventListener('click', () => {
+            iosMessage.style.display = 'none';
+        });
 
         // Autoplay if previously allowed
         if (localStorage.getItem('autoplayAllowed') === 'true') {
