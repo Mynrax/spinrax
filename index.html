@@ -98,6 +98,7 @@
         let timeLeft = 59 * 60; // Change this to set the countdown in seconds (e.g., 5 mins = 300 seconds)
         let music = document.getElementById("background-music");
         let musicButton = document.querySelector(".music-button");
+        music.volume = 0.3;
 
         function updateCountdown() {
             let minutes = Math.floor(timeLeft / 60);
