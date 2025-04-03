@@ -3,99 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>spinrax</title>
-
-
-    <meta property="og:title" content="spinrax">
-    <meta property="og:description" content="hehe mynrax go spin">
-
-
-    <link rel="icon" type="image/png" href="favicon.png">
-
+    <title>...?</title>
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Impact&display=swap');
+        
+        * {
             margin: 0;
-            background-color: black; 
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background: black;
             overflow: hidden;
-            cursor: pointer; 
-            color: white;
-            font-family: Arial, sans-serif;
+            position: relative;
         }
-
-        img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        #message {
+        
+        .background {
             position: absolute;
-            bottom: 20px;
-            font-size: 1.2em;
+            width: 100%;
+            height: 100%;
+            background: url('infinirax.gif') no-repeat center center/cover;
+            filter: blur(100px);
+            opacity: 0.3;
+        }
+        
+        .content {
+            position: relative;
             text-align: center;
+            color: white;
+            font-family: Impact, sans-serif;
+            text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black, -2px 2px 0px black;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .gif {
+            width: auto;
+            height: 50vh;
+            object-fit: cover;
+            z-index: 1;
+            animation: pulse 0.476s infinite ease-in-out;
+        }
+        
+        h1, h2 {
+            font-size: 3rem;
+            animation: pulse 0.476s infinite ease-in-out;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .music-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            font-family: Impact, sans-serif;
+            cursor: pointer;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-
-
-    <img id="spinning-gif" src="output.gif" alt="spinrax">
-
-
-    <div id="message">click anywhere for music 🎵</div>
-
-
-    <audio id="background-audio" loop>
-        <source src="funkytown.ogg" type="audio/ogg">
-        <source src="funkytown.mp3" type="audio/mpeg">
-        Your browser does not support the audio tag.
+    <div class="background"></div>
+    <div class="content">
+        <h1>MYNRAXLOL WILL BE REAL</h1>
+        <img class="gif" src="infinirax.gif" alt="GIF">
+        <h2 id="countdown">IN X MINUTES XX SECONDS</h2>
+    </div>
+    
+    <button class="music-button" onclick="toggleMusic()">🎵 Play Music</button>
+    <audio id="background-music" loop>
+        <source src="audio.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
     </audio>
-
-
-    <audio id="alternative-audio" loop>
-        <source src="special.ogg" type="audio/ogg">
-        <source src="special.mp3" type="audio/mpeg">
-        Your browser does not support the audio tag.
-    </audio>
-
+    
     <script>
-        const gifElement = document.getElementById('spinning-gif');
-        const audio = document.getElementById('background-audio');
-        const altAudio = document.getElementById('alternative-audio');
-        const message = document.getElementById('message');
+        let timeLeft = 59 * 60; // Change this to set the countdown in seconds (e.g., 5 mins = 300 seconds)
+        let music = document.getElementById("background-music");
+        let musicButton = document.querySelector(".music-button");
 
-        // variable for setting how high of a percentage the special spin should happen
-        const useAlternative = Math.random() < 0.01;
-
-        if (useAlternative) {
-            gifElement.src = 'burger.gif';
-            audio.style.display = 'none';  
-            altAudio.style.display = 'block';
-        } else {
-            altAudio.style.display = 'none';
+        function updateCountdown() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('countdown').innerText = `IN ${minutes} MINUTES ${seconds < 10 ? '0' : ''}${seconds} SECONDS`;
+            
+            if (timeLeft <= 0) {
+                window.location.href = "https://youtube.com/@mynraxlol";
+            } else {
+                timeLeft--;
+                setTimeout(updateCountdown, 1000);
+            }
         }
 
+        function toggleMusic() {
+            if (music.paused) {
+                music.play().catch(err => console.log("Autoplay prevented: " + err));
+                musicButton.innerText = "🔇 Stop Music";
+            } else {
+                music.pause();
+                musicButton.innerText = "🎵 Play Music";
+            }
+        }
 
-        function playAudio() {
-            const selectedAudio = useAlternative ? altAudio : audio;
-            selectedAudio.volume = 0.2; 
-            selectedAudio.play().then(() => {
-                message.style.display = 'none';
-                localStorage.setItem('autoplayAllowed', 'true');
-            }).catch(err => {
-                console.warn("Audio playback failed:", err);
-                message.innerText = "Click to enable music 🎵";
+        document.addEventListener("DOMContentLoaded", () => {
+            music.play().catch(() => {
+                console.log("Autoplay blocked, waiting for user interaction.");
             });
-        }
-
-        if (localStorage.getItem('autoplayAllowed') === 'true') {
-            playAudio();
-        }
-
-        document.body.addEventListener('click', playAudio);
+        });
+        
+        updateCountdown();
     </script>
 </body>
 </html>
