@@ -3,134 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>...?</title>
+    <title>Looping Video Showcase</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Impact&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        /* Custom styles */
         body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: black;
-            overflow: hidden;
-            position: relative;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevents scrollbars from appearing */
         }
-        
-        .background {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url('infinirax.gif') no-repeat center center/cover;
-            filter: blur(100px);
-            opacity: 0.3;
+        /* Ensure the main video container has the correct aspect ratio */
+        .video-aspect {
+            aspect-ratio: 16 / 9;
         }
-        
-        .content {
-            position: relative;
-            text-align: center;
-            color: white;
-            font-family: Impact, sans-serif;
-            text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black, -2px 2px 0px black;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+
+        /* Keyframes so it slooooooooooowly zooms in.
+          This animation is set to be very long (10 hours) to make the zoom
+          continuous for any normal viewing session. I guess.
+        */
+        @keyframes infiniteZoom {
+            from {
+                transform: scale(1);
+            }
+            to {
+                /* Zooms to 1100% over 10 hours */
+                transform: scale(11); 
+            }
         }
-        
-        .gif {
-            width: auto;
-            height: 50vh;
-            object-fit: cover;
-            z-index: 1;
-            animation: pulse 0.476s infinite ease-in-out;
-        }
-        
-        h1, h2 {
-            font: inherit;
-            font-size: 4em;
-            animation: pulse 0.476s infinite ease-in-out;
-            position: relative;
-            z-index: 3;
-        }
-        
-        .music-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            font-family: Impact, sans-serif;
-            cursor: pointer;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
+
+        /* Class to apply the zoom animation to the videos */
+        .zoom-in {
+            animation: infiniteZoom 36000s linear forwards;
+            transform-origin: center;
         }
     </style>
 </head>
-<body>
-    <div class="background"></div>
-    <div class="content">
-        <h1>MYNRAXLOL WILL BE REAL</h1>
-        <img class="gif" src="infinirax.gif" alt="GIF">
-        <h2 id="countdown">IN X MINUTES XX SECONDS</h2>
-    </div>
-    
-    <button class="music-button" onclick="toggleMusic()">🎵 Play Music</button>
-    <audio id="background-music" loop>
-        <source src="audio.ogg" type="audio/ogg">
-        Your browser does not support the audio element.
-    </audio>
-    
-    <script>
-        let timeLeft = 59 * 60; // Change this to set the countdown in seconds (e.g., 5 mins = 300 seconds)
-        let music = document.getElementById("background-music");
-        let musicButton = document.querySelector(".music-button");
-        music.volume = 0.3;
+<body class="bg-black">
 
-        function updateCountdown() {
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
-            document.getElementById('countdown').innerText = `IN ${minutes} MINUTES ${seconds < 10 ? '0' : ''}${seconds} SECONDS`;
-            
-            if (timeLeft <= 0) {
-                window.location.href = "https://youtube.com/@mynraxlol";
-            } else {
-                timeLeft--;
-                setTimeout(updateCountdown, 1000);
-            }
-        }
+    <!-- 
+      Background Video:
+      - Yeah.
+    -->
+    <video 
+        id="background-video"
+        src="nobodyhere.mp4"
+        class="fixed top-0 left-0 w-full h-full object-cover -z-10 blur-2xl opacity-50 zoom-in"
+        autoplay 
+        loop 
+        muted
+        playsinline
+    ></video>
 
-        function toggleMusic() {
-            if (music.paused) {
-                music.play().catch(err => console.log("Autoplay prevented: " + err));
-                musicButton.innerText = "🔇 Stop Music";
-            } else {
-                music.pause();
-                musicButton.innerText = "🎵 Play Music";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            music.play().catch(() => {
-                console.log("Autoplay blocked, waiting for user interaction.");
-            });
-        });
+    <!-- 
+      Main Content Wrapper:
+      - Uses flexbox to center the main video container vertically and horizontally.
+      - min-h-screen ensures it takes up the full height of the viewport.
+    -->
+    <main class="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
         
-        updateCountdown();
+        <!-- 
+          Main Video Container:
+          - Styled with a shadow and max-width.
+        -->
+        <div class="relative w-full max-w-5xl bg-black shadow-2xl shadow-black/50 video-aspect overflow-hidden">
+            
+            <!-- 
+              Main Video:
+              - Now includes the 'zoom-in' class for the gradual zoom effect.
+            -->
+            <video 
+                id="main-video"
+                src="nobodyhere.mp4"
+                class="w-full h-full object-cover zoom-in"
+                autoplay 
+                loop 
+                muted
+                playsinline
+            ></video>
+
+        </div>
+    </main>
+
+    <!-- 
+      Mute/Unmute Toggle Button:
+      - Positioned 'fixed' to stay in the bottom-right corner of the viewport.
+      - z-50 ensures it stays on top of all other content.
+    -->
+    <button id="mute-toggle" class="fixed bottom-4 right-4 z-50 p-2 bg-black/50 rounded-full text-white hover:bg-black/75 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50">
+        <!-- Muted Icon (shown by default) -->
+        <svg id="muted-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+        <!-- Unmuted Icon (hidden by default) -->
+        <svg id="unmuted-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Developer Console Warning ---
+            const warningStyle = [
+                'color: red',
+                'font-size: 48px',
+                'font-weight: bold',
+                '-webkit-text-stroke: 1px black'
+            ].join(';');
+            
+            const devToolsWarning = {};
+            Object.defineProperty(devToolsWarning, 'lie', {
+                get: function() {
+                    console.log('%c¯\_(ツ)_/¯', warningStyle);
+                    return '';
+                }
+            });
+            console.log(devToolsWarning);
+            
+            // --- Video Player Logic ---
+            const mainVideo = document.getElementById('main-video');
+            const backgroundVideo = document.getElementById('background-video');
+            const muteToggleBtn = document.getElementById('mute-toggle');
+            const mutedIcon = document.getElementById('muted-icon');
+            const unmutedIcon = document.getElementById('unmuted-icon');
+
+            // Set the default volume to 50%
+            mainVideo.volume = 0.5;
+
+            // Function to synchronize the two videos
+            const syncVideos = () => {
+                if (Math.abs(mainVideo.currentTime - backgroundVideo.currentTime) > 0.1) {
+                    backgroundVideo.currentTime = mainVideo.currentTime;
+                }
+            };
+
+            // Function to update the mute icon based on video state
+            const updateMuteIcon = (isMuted) => {
+                mutedIcon.classList.toggle('hidden', !isMuted);
+                unmutedIcon.classList.toggle('hidden', isMuted);
+            };
+
+            // Attempt to play the video with sound to check for autoplay policies.
+            // This will trigger a browser prompt if permissions are needed.
+            const checkAutoplay = async () => {
+                try {
+                    mainVideo.muted = false;
+                    await mainVideo.play();
+                    // Autoplay with sound succeeded
+                    console.log('Autoplay with sound is allowed. Fuck yeah.');
+                    updateMuteIcon(false);
+                } catch (err) {
+                    // Autoplay with sound was prevented by the browser.
+                    console.log('Autoplay with sound was prevented. Video will play muted, because someone hates sound... for some reason?');
+                    mainVideo.muted = true;
+                    // Ensure it plays muted if the first play() was blocked
+                    mainVideo.play(); 
+                    updateMuteIcon(true);
+                }
+            };
+
+            // Toggle mute state on button click
+            muteToggleBtn.addEventListener('click', () => {
+                const isCurrentlyMuted = mainVideo.muted;
+                mainVideo.muted = !isCurrentlyMuted;
+                updateMuteIcon(!isCurrentlyMuted);
+            });
+            
+            // Ensure videos are ready before trying to play or sync, otherwise oops we fucked up that'll desync
+            let videosReady = 0;
+            const onVideoReady = () => {
+                videosReady++;
+                if (videosReady === 2) {
+                    // Both videos have loaded their metadata.
+                    syncVideos();
+                    checkAutoplay();
+                }
+            };
+
+            mainVideo.addEventListener('loadedmetadata', onVideoReady);
+            backgroundVideo.addEventListener('loadedmetadata', onVideoReady);
+            
+            // Fallback: if the videos drift out of sync, this will correct them periodically.
+            mainVideo.addEventListener('timeupdate', syncVideos);
+        });
     </script>
+
 </body>
 </html>
