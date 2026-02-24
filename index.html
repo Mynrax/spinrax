@@ -3,134 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>...?</title>
+    <title>Mynrax</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Impact&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Expanded gradient for smooth panning */
+            --bg-gradient: linear-gradient(-45deg, #2E004C, #000000, #150024, #000000);
+            --glass-bg: rgba(18, 18, 18, 0.4);
+            --white: #FFFFFF;
         }
-        
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: black;
+
+        * { cursor: none; }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'JetBrains Mono', monospace;
             overflow: hidden;
+            
+            /* slow gradient animation */
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientShift 40s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* custom cursor */
+        #custom-cursor {
+            width: 15px; height: 15px;
+            background: white; border-radius: 50%;
+            position: fixed; 
+            top: 0; left: 0; /* Ensures GSAP calculates from true 0,0 */
+            pointer-events: none; z-index: 9999;
+            mix-blend-mode: difference;
+            /* Center the transform origin for smooth scaling */
+            transform-origin: center;
+        }
+
+        /* el cardo */
+        .card {
+            width: 817px; height: 307px;
+            background: var(--glass-bg);
+            border-radius: 34px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center;
+            padding: 0 50px; box-sizing: border-box;
+            opacity: 0; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .profile-pic {
+            width: 200px; height: 200px;
+            background: url('channels4_profile.jpg') center/cover;
+            border-radius: 150px; flex-shrink: 0;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+        }
+
+        .info { margin-left: 50px; color: var(--white); }
+        h1 { margin: 0; font-weight: 800; font-size: 68px; opacity: 0; }
+        p { margin: 5px 0 25px 0; font-weight: 300; font-size: 28px; opacity: 0; }
+
+        .socials { display: flex; gap: 25px; }
+        
+        /* elements that stagger */
+        .social-link { 
+            opacity: 0;
             position: relative;
+            z-index: 10;
+            cursor: none; /* Keeps custom cursor active over links */
+            display: inline-block; /* Helps with transform scaling */
         }
-        
-        .background {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url('infinirax.gif') no-repeat center center/cover;
-            filter: blur(100px);
-            opacity: 0.3;
+
+        .icon {
+            width: 45px; height: 45px;
+            filter: brightness(0) invert(1);
+            transition: transform 0.3s ease;
         }
-        
-        .content {
-            position: relative;
-            text-align: center;
-            color: white;
-            font-family: Impact, sans-serif;
-            text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black, -2px 2px 0px black;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+
+        /* hoverr effect on the icons */
+        .social-link:hover .icon {
+            transform: scale(1.15) translateY(-3px);
         }
-        
-        .gif {
-            width: auto;
-            height: 50vh;
-            object-fit: cover;
-            z-index: 1;
-            animation: pulse 0.476s infinite ease-in-out;
-        }
-        
-        h1, h2 {
-            font: inherit;
-            font-size: 4em;
-            animation: pulse 0.476s infinite ease-in-out;
-            position: relative;
-            z-index: 3;
-        }
-        
-        .music-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            font-family: Impact, sans-serif;
-            cursor: pointer;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
+
+        @media (max-width: 850px) {
+            .card { flex-direction: column; width: 90%; height: auto; padding: 50px 20px; text-align: center; }
+            .info { margin-left: 0; margin-top: 30px; }
+            #custom-cursor { display: none; }
+            * { cursor: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
-    <div class="content">
-        <h1>MYNRAXLOL WILL BE REAL</h1>
-        <img class="gif" src="infinirax.gif" alt="GIF">
-        <h2 id="countdown">IN X MINUTES XX SECONDS</h2>
+
+    <div id="custom-cursor"></div>
+
+    <div class="card">
+        <div class="profile-pic"></div>
+        <div class="info">
+            <h1>Mynrax</h1>
+            <p>@MynraxLOL</p>
+            <div class="socials">
+                <a href="https://youtube.com/@MynraxLOL" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <img class="icon" src="https://api.iconify.design/mdi:youtube.svg" alt="YouTube">
+                </a>
+                <a href="https://twitter.com/Mynrax" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <img class="icon" src="https://api.iconify.design/mynaui:twitter-solid.svg" alt="Twitter">
+                </a>
+                <a href="https://bsky.app/profile/mynrax.lol" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <img class="icon" src="https://api.iconify.design/ri:bluesky-fill.svg" alt="Bluesky">
+                </a>
+                <a href="https://github.com/mynrax" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <img class="icon" src="https://api.iconify.design/mdi:github.svg" alt="GitHub">
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <button class="music-button" onclick="toggleMusic()">🎵 Play Music</button>
-    <audio id="background-music" loop>
-        <source src="audio.ogg" type="audio/ogg">
-        Your browser does not support the audio element.
-    </audio>
-    
+
     <script>
-        let timeLeft = 59 * 60; // Change this to set the countdown in seconds (e.g., 5 mins = 300 seconds)
-        let music = document.getElementById("background-music");
-        let musicButton = document.querySelector(".music-button");
-        music.volume = 0.3;
+        const cursor = document.getElementById('custom-cursor');
 
-        function updateCountdown() {
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
-            document.getElementById('countdown').innerText = `IN ${minutes} MINUTES ${seconds < 10 ? '0' : ''}${seconds} SECONDS`;
-            
-            if (timeLeft <= 0) {
-                window.location.href = "https://youtube.com/@mynraxlol";
-            } else {
-                timeLeft--;
-                setTimeout(updateCountdown, 1000);
-            }
-        }
+        // 1. Permanently center the cursor's origin point for GSAP
+        gsap.set(cursor, { xPercent: -50, yPercent: -50 });
 
-        function toggleMusic() {
-            if (music.paused) {
-                music.play().catch(err => console.log("Autoplay prevented: " + err));
-                musicButton.innerText = "🔇 Stop Music";
-            } else {
-                music.pause();
-                musicButton.innerText = "🎵 Play Music";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            music.play().catch(() => {
-                console.log("Autoplay blocked, waiting for user interaction.");
+        // smoooooove cursor
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1, 
+                ease: "power2.out"
             });
         });
+
+        // a click effect for niceness
+        document.addEventListener('mousedown', () => {
+            gsap.to(cursor, { scale: 1.5, opacity: 0.5, duration: 0.2 });
+        });
+        document.addEventListener('mouseup', () => {
+            gsap.to(cursor, { scale: 1, opacity: 1, duration: 0.2 });
+        });
+
+        // entrance anim
+        const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+        tl.to(".card", {
+            opacity: 1,
+            y: 0,
+            duration: 2,
+            startAt: { y: 100 },
+        })
+        .to(".profile-pic", {
+            opacity: 1,
+            scale: 1,
+            duration: 1.5,
+            startAt: { scale: 0.5 },
+        }, "-=1.5") 
+        .to("h1", {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            startAt: { x: -30 },
+        }, "-=1.2")
+        .to("p", {
+            opacity: 0.7,
+            y: 0,
+            duration: 1,
+            startAt: { y: 15 },
+        }, "-=1")
+        .to(".social-link", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            startAt: { y: 20 },
+            stagger: 0.1 // This creates the 1-by-1 pop-in effect
+        }, "-=0.8");
+
+        // link hover fx
+        const socialLinks = document.querySelectorAll('.social-link');
         
-        updateCountdown();
+        socialLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                // Expands the cursor and makes it slightly transparent
+                gsap.to(cursor, { 
+                    scale: 3, 
+                    backgroundColor: "rgba(255, 255, 255, 0.4)", 
+                    duration: 0.3, 
+                    ease: "power2.out" 
+                });
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                // Returns the cursor to normal
+                gsap.to(cursor, { 
+                    scale: 1, 
+                    backgroundColor: "#FFFFFF", 
+                    duration: 0.3, 
+                    ease: "power2.out" 
+                });
+            });
+        });
+
     </script>
 </body>
 </html>
